@@ -10,5 +10,5 @@ libraryDependencies ++= Seq(
   "io.argonaut" %% "argonaut" % "6.1-M5" exclude("org.scala-lang", "scala-compiler"))
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.11.5" % "test")
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.12.2" % "test")

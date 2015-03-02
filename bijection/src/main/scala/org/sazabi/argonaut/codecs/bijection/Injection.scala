@@ -6,7 +6,6 @@ import argonaut._
 import com.twitter.bijection.{ Injection, InversionFailure }
 import scalaz._
 
-
 trait InjectionCodecs {
   def InjectionToDecodeJson[A, B](implicit inj: Injection[A, B],
     db: DecodeJson[B]): DecodeJson[A] = DecodeJson { c =>
