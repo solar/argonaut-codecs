@@ -1,10 +1,11 @@
 package org.sazabi.argonaut.codecs.bijection
 
-import argonaut._
-
-import com.twitter.bijection.{ Injection, InversionFailure }
-
 import scala.util.{ Failure, Success }
+
+import argonaut._
+import com.twitter.bijection.{ Injection, InversionFailure }
+import scalaz._
+
 
 trait InjectionCodecs {
   def InjectionToDecodeJson[A, B](implicit inj: Injection[A, B],
