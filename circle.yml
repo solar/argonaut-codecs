@@ -1,0 +1,16 @@
+# machine:
+  # pre:
+    # - wget http://dl.bintray.com/sbt/debian/sbt-0.13.7.deb
+    # - sudo dpkg -i sbt-0.13.7.deb
+
+  # timezone:
+    # Asia/Tokyo
+
+  # java:
+    # version: openjdk7
+
+# dependencies:
+  # cache_directories:
+    # - ~/.m2
+    # - ~/.ivy2
+    # - ~/.sbt
