@@ -1,0 +1,4 @@
+machine:
+  pre:
+    - wget http://dl.bintray.com/sbt/debian/sbt-0.13.8.deb
+    - sudo dpkg -i sbt-0.13.8.deb
