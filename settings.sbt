@@ -1,10 +1,12 @@
 organization := "org.sazabi"
 
-version := "0.0.1-SNAPSHOT"
+version := "0.0.2-SNAPSHOT"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
-crossScalaVersions := Seq(scalaVersion.value, "2.10.4")
+crossScalaVersions := Seq(scalaVersion.value, "2.10.5")
+
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Xlint")
 
 libraryDependencies ++= Seq(
   "io.argonaut" %% "argonaut" % "6.1-M5" exclude("org.scala-lang", "scala-compiler"))

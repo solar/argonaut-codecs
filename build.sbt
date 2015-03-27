@@ -16,14 +16,17 @@ lazy val root = project.in(file(".")).settingSets(
 lazy val core = project.in(file("core")).settingSets(
   autoPlugins, buildScalaFiles, userSettings, sbtFiles(files: _*)
 ).settings(
-  name := "argonaut-codecs-core"
+  name := "argonaut-codecs-core",
+  libraryDependencies += "com.chuusai" %% "shapeless" % "2.1.0"
 )
 
 lazy val bijection = project.in(file("bijection")).settingSets(
   autoPlugins, buildScalaFiles, userSettings, sbtFiles(files: _*)
 ).settings(
   name := "argonaut-codecs-bijection",
-  libraryDependencies += "com.twitter" %% "bijection-core" % "0.7.2"
+  libraryDependencies ++= Seq(
+    "com.chuusai" %% "shapeless" % "2.1.0",
+    "com.twitter" %% "bijection-core" % "0.7.2")
 )
 
 lazy val spire = project.in(file("spire")).settingSets(

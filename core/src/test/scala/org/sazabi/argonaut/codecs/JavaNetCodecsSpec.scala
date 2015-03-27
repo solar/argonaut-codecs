@@ -8,10 +8,10 @@ import scalaz._
 
 class JavaNetCodecsSpec extends FlatSpec with Matchers with Inside with JavaNetCodecs {
   val insproutInetAddr = InetAddress.getByName("insprout.com")
-  val insproutIpAddr = "54.249.225.247"
+  val insproutIpAddr = insproutInetAddr.getHostAddress
 
   val localInetAddr = InetAddress.getLocalHost()
-  val localIpAddr = "127.0.0.1"
+  val localIpAddr = localInetAddr.getHostAddress
 
   "InetAddressEncodeJson" should "encode InetAddress to Json" in {
     val ej = InetAddressEncodeJson
