@@ -17,8 +17,9 @@ trait ULongs {
   }
 
   private[this] val number2ULong: JsonNumber => Throwable \/ ULong = n => {
-    n.toBigInt.map(i => \/.fromTryCatchNonFatal(ULong.fromBigInt(i)))
-      .getOrElse(\/.left(new IllegalArgumentException("not an integer")))
+    n.toLong.map { i => \/.fromTryCatchNonFatal(ULong(i.toString)) }.orElse(
+      n.toBigInt.map { i => \/.fromTryCatchNonFatal(ULong.fromBigInt(i)) })
+        .getOrElse(\/.left(new IllegalArgumentException("not an integer")))
   }
 
   private[this] val string2ULong: String => Throwable \/ ULong = s =>
