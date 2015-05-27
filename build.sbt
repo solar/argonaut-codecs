@@ -26,12 +26,12 @@ lazy val bijection = project.in(file("bijection")).settingSets(
   name := "argonaut-codecs-bijection",
   libraryDependencies ++= Seq(
     "com.chuusai" %% "shapeless" % "2.1.0",
-    "com.twitter" %% "bijection-core" % "0.7.2")
+    "com.twitter" %% "bijection-core" % "0.8.0")
 )
 
 lazy val spire = project.in(file("spire")).settingSets(
   autoPlugins, buildScalaFiles, userSettings, sbtFiles(files: _*)
 ).settings(
   name := "argonaut-codecs-spire",
-  libraryDependencies += "org.spire-math" %% "spire" % "0.9.1"
+  libraryDependencies += "org.spire-math" %% "spire" % "0.10.1"
 ).dependsOn(core)
