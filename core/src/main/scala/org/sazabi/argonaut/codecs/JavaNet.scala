@@ -1,37 +1,17 @@
 package org.sazabi.argonaut.codecs
 
-import util.NetUtil
-
 import argonaut._
-import argonaut.Json._
 import argonaut.DecodeJson._
+import argonaut.Json._
+import com.google.common.net.{ HostAndPort, InetAddresses }
 
 import java.net.{ InetAddress, InetSocketAddress, UnknownHostException, URL }
 
 import scala.util.{ Failure, Success, Try }
 
 trait JavaNetCodecs {
-  private[this] def toInetAddress(opt: Option[Int], a: HCursor): DecodeResult[InetAddress] = {
-    opt.map { i =>
-      val bytes = Array[Byte](
-        ((i & 0xff000000) >> 24).toByte,
-        ((i & 0x00ff0000) >> 16).toByte,
-        ((i & 0x0000ff00) >>  8).toByte,
-        ((i & 0x000000ff)).toByte)
-
-      Try(InetAddress.getByAddress(bytes))
-    }.getOrElse(Failure(new IllegalArgumentException())) match {
-      case Success(addr) => DecodeResult.ok(addr)
-      case Failure(e: UnknownHostException) =>
-        DecodeResult.fail(e.getMessage, a.history)
-      case _ =>
-        DecodeResult.fail("Invalid expression for InetAddress", a.history)
-    }
-  }
-
-  private[this] def stringToInetAddress(s: String, a: HCursor):
-      DecodeResult[InetAddress] = {
-    Try(NetUtil.getByName(s)) match {
+  private[this] def stringToInetAddr(s: String, a: HCursor): DecodeResult[InetAddress] = {
+    Try(InetAddresses.forString(s)).orElse(Try(InetAddress.getByName(s))) match {
       case Success(addr) => DecodeResult.ok(addr)
       case Failure(e: UnknownHostException) =>
         DecodeResult.fail(e.getMessage, a.history)
@@ -40,32 +20,59 @@ trait JavaNetCodecs {
     }
   }
 
-  implicit def InetAddressDecodeJson: DecodeJson[InetAddress] =
+  implicit val InetAddressDecodeJson: DecodeJson[InetAddress] =
     DecodeJson(a => a.focus.number orElse a.focus.string match {
-      case Some(n: JsonNumber) => toInetAddress(n.toInt, a)
-      case Some(s: String) => stringToInetAddress(s, a)
+      case Some(n: JsonNumber) => {
+        n.toInt.map { i =>
+          DecodeResult.ok[InetAddress](InetAddresses.fromInteger(i))
+        }.getOrElse(DecodeResult.fail("Invalid range for Inet4Address", a.history))
+      }
+      case Some(s: String) => stringToInetAddr(s, a)
       case _ => DecodeResult.fail("Invalid expression for InetAddress", a.history)
     })
 
-  implicit def InetAddressEncodeJson: EncodeJson[InetAddress] =
+  implicit val InetAddressEncodeJson: EncodeJson[InetAddress] =
     EncodeJson { a =>
       jString(a.getHostAddress)
     }
 
-  implicit def InetSocketAddressDecodeJson: DecodeJson[InetSocketAddress] =
-    DecodeJson(a => a.focus.string.flatMap { host =>
-      Try(NetUtil.parseHosts(host).head).toOption
+  implicit val HostAndPortDecodeJson: DecodeJson[HostAndPort] = {
+    DecodeJson(a => a.focus.string.map { s =>
+      Try(HostAndPort.fromString(s))
     } match {
-      case Some(addr) => DecodeResult.ok(addr)
-      case _ =>
-        DecodeResult.fail("Invalid expression for InetSocketAddress", a.history)
+      case Some(Success(hap)) => DecodeResult.ok(hap)
+      case Some(Failure(e)) => DecodeResult.fail(e.getMessage, a.history)
+      case None => DecodeResult.fail("invalid expression for HostAndPort", a.history)
     })
+  }
+
+  implicit val HostAndPortEncodeJson: EncodeJson[HostAndPort] =
+    EncodeJson { hp => jString(hp.toString) }
 
   implicit def InetSocketAddressEncodeJson: EncodeJson[InetSocketAddress] =
     EncodeJson { a =>
-      val str = a.toString
-      jString(str.drop(str.indexOf('/') + 1))
+      val host = a.getHostString
+      val port = a.getPort
+      jString(s"$host:$port")
     }
+
+  implicit val InetSocketAddressDecodeJson: DecodeJson[InetSocketAddress] =
+    DecodeJson(a => a.focus.string.map { s =>
+      Try(HostAndPort.fromString(s)).flatMap { hp =>
+        val host = hp.getHostText
+        val port = hp.getPort
+
+        Try {
+          if (host.isEmpty) new InetSocketAddress(port)
+          else new InetSocketAddress(host, port)
+        }
+      }
+    } match {
+      case Some(Success(addr)) => DecodeResult.ok(addr)
+      case Some(Failure(e)) => DecodeResult.fail(e.getMessage, a.history)
+      case None => DecodeResult.fail("invalid expression for InetSocketAddress",
+        a.history)
+    })
 
   implicit val URLDecodeJson: DecodeJson[URL] = DecodeJson.optionDecoder(
     j => j.string.flatMap { s => Try(new URL(s)).toOption },
