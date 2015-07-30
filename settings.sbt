@@ -13,4 +13,6 @@ libraryDependencies += "io.argonaut" %% "argonaut" % "6.1"
 libraryDependencies += "com.github.scalaprops" %% "scalaprops" % "0.1.11" % "test"
 
 testFrameworks += new TestFramework("scalaprops.ScalapropsFramework")
-parallelExecution in Test := false
+
+parallelExecution in Global := false
+
