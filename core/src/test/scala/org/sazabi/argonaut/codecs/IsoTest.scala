@@ -2,42 +2,13 @@ package org.sazabi.argonaut.codecs
 
 import argonaut._, Json._, JsonIdentity._
 import scalaprops._, Property.forAll
-import scalaz._, Isomorphism._, std.string._
+import scalaz._, Isomorphism.{ <~>, IsoFunctorTemplate }, std.string._
+import shapeless._
 
 object IsoTest extends Scalaprops {
-  sealed private[this] trait Opt[A] {
-    def isOne: Boolean
-  }
-
-  private[this] case class One[A](value: A) extends Opt[A] {
-    val isOne = true
-  }
-
-  private[this] case class Zero[A]() extends Opt[A] {
-    val isOne = false
-  }
-
-  private[this] object Opt {
-    implicit val maybeFunctorIso: (Maybe <~> Opt) = new IsoFunctorTemplate[Maybe, Opt] {
-      def from[A](fa: Opt[A]): Maybe[A] = fa match {
-        case One(a) => Maybe.just(a)
-        case Zero() => Maybe.empty
-      }
-
-      def to[A](ga: Maybe[A]): Opt[A] = ga.cata(One(_), Zero())
-    }
-  }
-
-  private[this] case class Str(value: String)
-
-  private[this] object Str {
-    implicit val stringIso: (String <=> Str) = new IsoSet[String, Str] {
-      val to: String => Str = Str(_)
-      val from: Str => String = _.value
-    }
-  }
-
   val functorDecodeJson = {
+    implicit val iso = Opt.maybeFunctorIso // for scala 2.10
+
     implicit val dj = Iso.functorDecodeJson[Maybe, Opt, String]
 
     forAll { (maybe: Maybe[String @@ GenTags.Ascii]) =>
@@ -55,6 +26,7 @@ object IsoTest extends Scalaprops {
   }
 
   val functorEncodeJson = {
+    implicit val iso = Opt.maybeFunctorIso // for scala 2.10
     implicit val ej = Iso.functorEncodeJson[Maybe, Opt, String]
 
     forAll { (maybe: Maybe[String @@ GenTags.Ascii]) =>

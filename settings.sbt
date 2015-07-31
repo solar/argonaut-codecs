@@ -2,9 +2,9 @@ organization := "org.sazabi"
 
 version := "0.0.4-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+crossScalaVersions := Seq("2.11.7", "2.10.5")
 
-crossScalaVersions := Seq(scalaVersion.value, "2.10.5")
+scalaVersion := crossScalaVersions.value.head
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Xlint")
 
