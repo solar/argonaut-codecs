@@ -19,10 +19,10 @@ lazy val core = project.in(file("core")).settingSets(
   name := "argonaut-codecs-core",
   libraryDependencies ++= Seq(
     "com.chuusai" %% "shapeless" % "2.2.5",
-    "com.google.guava" % "guava" % "18.0"),
+    "com.google.guava" % "guava" % "19.0"),
   libraryDependencies ++= (
     if (scalaVersion.value.startsWith("2.10"))
-      Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full))
+      Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full))
     else Seq()
   )
 )
@@ -36,7 +36,7 @@ lazy val bijection = project.in(file("bijection")).settingSets(
     "com.twitter" %% "bijection-core" % "0.8.1"),
   libraryDependencies ++= (
     if (scalaVersion.value.startsWith("2.10"))
-      Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full))
+      Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full))
     else Seq()
   )
 )
@@ -45,5 +45,5 @@ lazy val spire = project.in(file("spire")).settingSets(
   autoPlugins, buildScalaFiles, userSettings, sbtFiles(files: _*)
 ).settings(
   name := "argonaut-codecs-spire",
-  libraryDependencies += "org.spire-math" %% "spire" % "0.10.1"
+  libraryDependencies += "org.spire-math" %% "spire" % "0.11.0"
 ).dependsOn(core)
