@@ -1,5 +1,4 @@
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
-releaseCrossBuild := true
 
 publishMavenStyle := true
 
